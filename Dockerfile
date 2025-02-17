@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000  
 
 # Define the startup command
-CMD ["npm", "server.js"]
+CMD ["node", "server.js"]
