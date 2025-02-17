@@ -1,20 +1,31 @@
 steps:
-# Step 1: Build the Docker image
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'build'
-    - '-t'
-    - 'us-central1-docker.pkg.dev/nikithalabs/nikitha-100953192/my-app:$COMMIT_SHA'
-    - '.'
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/nikithalabs/nikitha-100953192/my-app:$COMMIT_SHA'
+      - '.'
 
-# Step 2: Push the image to Artifact Registry
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'push'
-    - 'us-central1-docker.pkg.dev/nikithalabs/nikitha-100953192/my-app:$COMMIT_SHA'
+  # Step 2: Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/nikithalabs/nikitha-100953192/my-app:$COMMIT_SHA'
+
+  # Step 3: Deploy the image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'  # Google Cloud SDK container image
+    args:
+      - 'run'
+      - 'deploy'
+      - 'my-app'  # Change this to your Cloud Run service name
+      - '--image=us-central1-docker.pkg.dev/nikithalabs/nikitha-100953192/my-app:$COMMIT_SHA'
+      - '--platform=managed'
+      - '--region=us-central1'  # Change region if needed
+      - '--allow-unauthenticated'  # Optional, depending on your access settings
 
 options:
   logging: CLOUD_LOGGING_ONLY
 
 images:
-  - 'us-central1-docker.pkg.dev/nikithalabs/nikitha-100953192/my-app:$COMMIT_SHA' 
+  - 'us-central1-docker.pkg.dev/nikithalabs/nikitha-100953192/my-app:$COMMIT_SHA'
